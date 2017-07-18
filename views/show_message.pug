@@ -1,0 +1,8 @@
+html
+    body
+        title Driver
+    body
+        if(type == "error")
+            h3(style = "color:red") #{message}
+        else
+            h3 New driver, name: #{driver.name}, phone_number: #{driver.phone_number} added!

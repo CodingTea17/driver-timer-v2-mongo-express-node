@@ -1,0 +1,164 @@
+// Look into this...It is there to allow "Block-scoped declarations (let, const, function, class"...?
+"use strict";
+
+var express = require('express');
+var bodyParser = require('body-parser');
+var multer = require('multer');
+var upload = multer();
+var mongoose = require('mongoose');
+var path = require("path");
+var app = express();
+
+// connects to my mongodb "my_db" database
+mongoose.connect('mongodb://localhost/my_db', {useMongoClient: true});
+
+var driverSchema = mongoose.Schema({
+    name: String,
+    phone_number: Number,
+    store_number: Number,
+    timeback: Number
+});
+
+var Driver = mongoose.model("Driver", driverSchema);
+
+// Tells server to use pug
+app.set('view engine', 'pug');
+app.set('views', './views');
+// Tells server to look in the 'views' folder
+
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({extended: true})); // for parsing application/x-www-form-urlencoded
+app.use(upload.array()); // for parsing multipart/fomr-data
+app.use(express.static(__dirname + '/public'));
+app.use('/bower_components',  express.static(__dirname + '/bower_components'));
+
+// var things = require('./things.js');
+// app.use('/things', things);
+
+app.get('/:id([0-9]{3})', function(req, res){
+    function getDriversQuery(){
+        var query = Driver.find({store_number:req.params.id});
+        return query
+    }
+    // var query =  getDriversQuery();
+    // query.exec(function(err,drivers){
+    //     if(err)
+    //         return console.log(err);
+    //     drivers.forEach(function(driver){
+    //         console.log(driver.name);
+    //         console.log(driver.timeback);
+            
+    //     });
+    // });
+     Driver.find({store_number:req.params.id}, function(err,docs){
+        res.render('drivertimer.pug',{data:docs});     
+     });
+    // res.render('drivertimer.pug');
+});
+
+app.get('/driversetup/:id([0-9]{3})', function(req, res) {
+    var id = '/driversetup/' + req.params.id;
+    res.render('driver_form.pug', {store_id: id});
+});
+
+app.post('/driversetup/:id([0-9]{3})', function(req, res){
+    //Gets the store number from url request. Ex. '/driversetup/177', 'id = 177'
+    var id = req.params.id;
+    
+    var driverInfo = req.body; //Gets the parsed info from the form
+    
+    // if(!driverInfo.name || driverInfo.phone_number){
+    //     res.render('show_message', {message: "Sorry, you did not complete the form..."})
+    // }
+    // else {}
+    
+    var newDriver = new Driver({
+        name: driverInfo.name,
+        phone_number: 1 + driverInfo.phone_number,
+        store_number: id
+    });
+    
+    newDriver.save(function(err, Driver){
+        if(err)
+        res.render('show_message', {message: "Database error", type:"error"});
+        else
+        res.render('show_message', {message: "New driver added", type: "success", driver: driverInfo});
+    });
+});
+
+// Handle inbound sms
+app.get('/inbound', function(req, res) {
+  //calls function to handle the sms
+  handleParams(req.query, res);
+});
+
+
+// Returns an error message to all other routes.
+// app.get('*', function(req, res){
+//     res.send('Sorry, this is an invalid URL');
+// });
+
+app.listen(process.env.PORT || 3000);
+
+  
+function handleParams(params, res) {
+  if (!params.to || !params.msisdn) {
+    console.log('This is not a valid inbound SMS message!');
+  } else {
+    let incomingData = {
+      messageId: params.messageId,
+      from: params.msisdn,
+      text: params.text,
+      type: params.type,
+      timestamp: params['message-timestamp']
+    };
+    //INSERT FUNCTION TO ROUTE MESSAGES (todo: make seperate function)
+    
+    // generates a query by the number who sent to text
+    var myquery = {phone_number: incomingData.from };
+    
+    // Gathers the time the driver will be back
+    var newvalues = { timeback: (Date.parse(incomingData.timestamp) + (incomingData.text * 60000))};
+    
+    //var query = {'username':req.user.username};
+    //req.newData.username = req.user.username;
+    
+    // Finds an entry based on 'myquery'. 'upsert': means create one if not found 
+    Driver.findOneAndUpdate(myquery, newvalues, {upsert:false}, function(err, doc){
+        if (err) return res.send(500, { error: err });
+        //return res.send("succesfully saved");
+    });
+    
+    
+    console.log(incomingData.from);
+    console.log('Success. Message sent at: ' + (Date.parse(incomingData.timestamp) + '.'));
+    console.log('Success. Driver to return at: ' + (Date.parse(incomingData.timestamp) + (incomingData.text * 60000) + '.'));
+    
+    //console.log(parseInt(incomingData.text));
+    //storage.setItem('id_' + params.messageId, incomingData);
+    //res.send(incomingData);
+  }
+  res.status(200).end();
+}
+
+
+
+// Using Mongoose Streams
+
+// Finally, Mongoose has also support for streams and streams are event emitters. So, you could get a stream and then subscribe for 'data' and 'error' events. Like this:
+
+// function getjedisStream(name){
+//   var stream = Jedi.find({name:name}).stream();
+//   return stream;
+// }
+// Then you can simply do:
+
+// var stream = getJedisStream('Anakin');
+// stream.on('data', function(jedis){
+//   jedis.forEach(function(jedi){
+//       console.log(jedi.name);
+//   });
+// });
+// stream.on('error', function(error){
+//     console.log(error);
+// });
