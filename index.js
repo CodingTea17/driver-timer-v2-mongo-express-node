@@ -16,6 +16,7 @@ var driverSchema = mongoose.Schema({
     name: String,
     phone_number: Number,
     store_number: Number,
+    should_beep: Boolean,
     timeback: Number
 });
 
