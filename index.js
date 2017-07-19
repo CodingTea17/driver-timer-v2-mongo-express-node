@@ -10,7 +10,7 @@ var path = require("path");
 var app = express();
 
 // connects to my mongodb "my_db" database
-mongoose.connect('mongodb://localhost/my_db', {useMongoClient: true});
+mongoose.connect('mongodb://pg:pizzaguys@ds034807.mlab.com:34807/pizzaguys', {useMongoClient: true});
 
 var driverSchema = mongoose.Schema({
     name: String,
@@ -75,7 +75,8 @@ app.post('/driversetup/:id([0-9]{3})', function(req, res){
     var newDriver = new Driver({
         name: driverInfo.name,
         phone_number: 1 + driverInfo.phone_number,
-        store_number: id
+        store_number: id,
+        should_beep: false
     });
     
     newDriver.save(function(err, Driver){
