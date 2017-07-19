@@ -117,7 +117,7 @@ app.post('/driversetup/:id([0-9]{3})', function(req, res){
 });
 
 
-// // Returns an error message to all other routes.
+// Returns an error message to all other routes.
 // app.get('*', function(req, res){
 //      res.send('Sorry, this is an invalid URL');
 // });

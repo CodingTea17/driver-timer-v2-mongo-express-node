@@ -6,14 +6,14 @@ meta(http-equiv='refresh', content='10')
 body
   ul
     each driver in data
+      audio#timer-beep
+        source(src='../audio/beep.mp3')
       div(data-beep=driver.should_beep)
       h1 #{driver.name}'s Countdown to Return:
       h2(data-countdown=driver.timeback)
       div(data-beep=driver.should_beep)
       li Timeback: #{driver.timeback}
-      li Store ID: #{driver.store_number}.
-      audio#timer-beep
-        source(src='../audio/beep.mp3')
+      li Store ID: #{driver.store_number}
 
 
 script.
