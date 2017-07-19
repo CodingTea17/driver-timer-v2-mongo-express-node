@@ -37,6 +37,15 @@ app.use('/audio',  express.static(__dirname + '/audio'));
 // var things = require('./things.js');
 // app.use('/things', things);
 
+/************************************************************
+    Handles inbound sms messages. Actually has a compressed
+    javascript function. Now do it to the others!!!!!
+************************************************************/
+app.get('/inbound', function(req, res) {
+  //calls function to handle the sms
+  handleParams(req.query, res);
+});
+
 app.get('/:id([0-9]{3})', function(req, res, next){
     
     //Finds drivers associated with the request id aka store number
@@ -107,20 +116,11 @@ app.post('/driversetup/:id([0-9]{3})', function(req, res){
     });
 });
 
-/************************************************************
-    Handles inbound sms messages. Actually has a compressed
-    javascript function. Now do it to the others!!!!!
-************************************************************/
-app.get('/inbound', function(req, res) {
-  //calls function to handle the sms
-  handleParams(req.query, res);
-});
 
-
-// Returns an error message to all other routes.
-app.get('*', function(req, res){
-     res.send('Sorry, this is an invalid URL');
-});
+// // Returns an error message to all other routes.
+// app.get('*', function(req, res){
+//      res.send('Sorry, this is an invalid URL');
+// });
 
 app.listen(process.env.PORT || 3000);
 

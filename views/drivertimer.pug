@@ -6,6 +6,7 @@ meta(http-equiv='refresh', content='10')
 body
   ul
     each driver in data
+      div(data-beep=driver.should_beep)
       h1 #{driver.name}'s Countdown to Return:
       h2(data-countdown=driver.timeback)
       div(data-beep=driver.should_beep)
