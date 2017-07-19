@@ -32,36 +32,55 @@ app.use(bodyParser.urlencoded({extended: true})); // for parsing application/x-w
 app.use(upload.array()); // for parsing multipart/fomr-data
 app.use(express.static(__dirname + '/public'));
 app.use('/bower_components',  express.static(__dirname + '/bower_components'));
+app.use('/audio',  express.static(__dirname + '/audio'));
 
 // var things = require('./things.js');
 // app.use('/things', things);
 
-app.get('/:id([0-9]{3})', function(req, res){
-    function getDriversQuery(){
-        var query = Driver.find({store_number:req.params.id});
-        return query
-    }
-    // var query =  getDriversQuery();
-    // query.exec(function(err,drivers){
-    //     if(err)
-    //         return console.log(err);
-    //     drivers.forEach(function(driver){
-    //         console.log(driver.name);
-    //         console.log(driver.timeback);
-            
-    //     });
-    // });
-     Driver.find({store_number:req.params.id}, function(err,docs){
+app.get('/:id([0-9]{3})', function(req, res, next){
+    
+    //Finds drivers associated with the request id aka store number
+    Driver.find({store_number:req.params.id}, function(err,docs){
+        if (err) return res.send(500, { error: err });
+        
         res.render('drivertimer.pug',{data:docs});     
-     });
-    // res.render('drivertimer.pug');
+    });
+     
+    //Sends the app to the middleware which 
+    next();
 });
 
+/************************************************************
+    Middleware which executes a script (eventually need 
+    to compress into functions) after rendering the page.
+************************************************************/
+app.use('/:id([0-9]{3})', function(req, res){
+    // Selects all the drivers with the store id of the request
+    var myquery = {store_number:req.params.id};
+    
+    // Gathers the time the driver will be back
+    var newvalues = { should_beep: false };
+    
+    // Finds an entry based on 'myquery'. 'upsert': means create one if not found 
+    Driver.updateMany(myquery, newvalues, {upsert:false}, function(err, doc){
+        if (err) return res.send(500, { error: err });
+    });
+});
+
+
+/************************************************************
+    Middleware which executes a script (eventually need 
+    to compress into functions) after rendering the page.
+************************************************************/
 app.get('/driversetup/:id([0-9]{3})', function(req, res) {
     var id = '/driversetup/' + req.params.id;
     res.render('driver_form.pug', {store_id: id});
 });
 
+/************************************************************
+    Middleware which executes a script (eventually need 
+    to compress into functions) after rendering the page.
+************************************************************/
 app.post('/driversetup/:id([0-9]{3})', function(req, res){
     //Gets the store number from url request. Ex. '/driversetup/177', 'id = 177'
     var id = req.params.id;
@@ -88,7 +107,10 @@ app.post('/driversetup/:id([0-9]{3})', function(req, res){
     });
 });
 
-// Handle inbound sms
+/************************************************************
+    Handles inbound sms messages. Actually has a compressed
+    javascript function. Now do it to the others!!!!!
+************************************************************/
 app.get('/inbound', function(req, res) {
   //calls function to handle the sms
   handleParams(req.query, res);
@@ -96,9 +118,9 @@ app.get('/inbound', function(req, res) {
 
 
 // Returns an error message to all other routes.
-// app.get('*', function(req, res){
-//     res.send('Sorry, this is an invalid URL');
-// });
+app.get('*', function(req, res){
+     res.send('Sorry, this is an invalid URL');
+});
 
 app.listen(process.env.PORT || 3000);
 
@@ -120,7 +142,7 @@ function handleParams(params, res) {
     var myquery = {phone_number: incomingData.from };
     
     // Gathers the time the driver will be back
-    var newvalues = { timeback: (Date.parse(incomingData.timestamp) + (incomingData.text * 60000))};
+    var newvalues = { timeback: (Date.parse(incomingData.timestamp) + (incomingData.text * 60000)), should_beep: true};
     
     //var query = {'username':req.user.username};
     //req.newData.username = req.user.username;

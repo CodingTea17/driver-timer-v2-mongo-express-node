@@ -6,9 +6,14 @@ meta(http-equiv='refresh', content='10')
 body
   ul
     each driver in data
-      li #{driver.name} : #{driver.timeback}. Store ID: #{driver.store_number}.
-      p Countdown to Return:
-      div(data-countdown=driver.timeback)
+      h1 #{driver.name}'s Countdown to Return:
+      h2(data-countdown=driver.timeback)
+      div(data-beep=driver.should_beep)
+      li Timeback: #{driver.timeback}
+      li Store ID: #{driver.store_number}.
+      audio#timer-beep
+        source(src='../audio/beep.mp3')
+
 
 script.
   $('[data-countdown]').each(function() {
@@ -18,5 +23,12 @@ script.
   $this.html(event.strftime('%M:%S'));
   });
   });
+  $('[data-beep]').each(function() {
+  var $this = $(this);
+  if($this.data){
+  document.getElementById( 'timer-beep' ).play();
+  }
+  });
+  
 
 
