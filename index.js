@@ -8,6 +8,7 @@ var upload = multer();
 var mongoose = require('mongoose');
 var path = require("path");
 var app = express();
+var just_beeped;
 
 // connects to my mongodb "my_db" database
 mongoose.connect('mongodb://pg:pizzaguys@ds034807.mlab.com:34807/pizzaguys', {useMongoClient: true});
@@ -70,10 +71,12 @@ app.use('/:id([0-9]{3})', function(req, res){
     // Gathers the time the driver will be back
     var newvalues = { should_beep: false };
     
-    // Finds an entry based on 'myquery'. 'upsert': means create one if not found 
-    Driver.updateMany(myquery, newvalues, {upsert:false}, function(err, doc){
-        if (err) return res.send(500, { error: err });
-    });
+    if(just_beeped == true){
+        // Finds an entry based on 'myquery'. 'upsert': means create one if not found 
+        Driver.updateMany(myquery, newvalues, {upsert:false}, function(err, doc){
+            if (err) return res.send(500, { error: err });
+        });
+    };
 });
 
 
