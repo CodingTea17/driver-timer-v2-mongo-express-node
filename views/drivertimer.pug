@@ -1,19 +1,62 @@
-head
-script(type='text/javascript', src='https://code.jquery.com/jquery-1.7.1.min.js')
-script(src='../bower_components/jquery.countdown/dist/jquery.countdown.js')
-meta(http-equiv='refresh', content='10')
+doctype html
+html(lang="en")
+  head
+    title Driver Timer
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css', integrity='sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ', crossorigin='anonymous')
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
+    meta(http-equiv='refresh', content='10')
+    script(type='text/javascript', src='https://code.jquery.com/jquery-1.7.1.min.js')
+    script(src='../bower_components/jquery.countdown/dist/jquery.countdown.js')
+body(style='background: #1C1F24')
+  - var add_driver_url = '/driversetup/' + id;
+  nav.navbar.navbar-toggleable-md.navbar-light.bg-faded
+    button.navbar-toggler.navbar-toggler-right(type='button', data-toggle='collapse', data-target='#navbarNavDropdown', aria-controls='navbarNavDropdown', aria-expanded='false', aria-label='Toggle navigation')
+      span.navbar-toggler-icon
+    a.navbar-brand(href='#') Pizza Guys Driver Timer | Store #{id}
+    #navbarNavDropdown.collapse.navbar-collapse
+      ul.navbar-nav
+        li.nav-item.active
+          a.nav-link(href=add_driver_url)
+            | Add a Driver 
+            span.sr-only (current)
+        // li.nav-item
+        //   a.nav-link(href='#') Features
+        // li.nav-item
+        //   a.nav-link(href='#') Pricing
+        // li.nav-item.dropdown
+        //   a#navbarDropdownMenuLink.nav-link.dropdown-toggle(href='http://example.com', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
+        //     | Dropdown link
+        //   .dropdown-menu(aria-labelledby='navbarDropdownMenuLink')
+        //     a.dropdown-item(href='#') Action
+        //     a.dropdown-item(href='#') Another action
+        //     a.dropdown-item(href='#') Something else here
 
-body
-  ul
-    each driver in data
-      audio#timer-beep
-        source(src='../audio/beep.mp3')
-      div(data-beep=driver.should_beep)
-      h1 #{driver.name}'s Countdown to Return:
-      h2(data-countdown=driver.timeback)
-      div(data-beep=driver.should_beep)
-      li Timeback: #{driver.timeback}
-      li Store ID: #{driver.store_number}
+  .container-fluid
+      //a(href=add_driver_url) Add Drivers
+      ul
+      each driver in data
+        - for (var i = 0; i < data.length; i++)
+        div.row(style="margin-top: 20pxp; margin-bottom: 20px")
+            div.col-md-12
+              audio#timer-beep
+                source(src='../audio/beep.mp3')
+              div(data-beep=driver.should_beep)
+              .card.card-outline-danger
+                .card-block
+                  .row
+                    .col-md-6
+                      h2.text-white.text-left #{driver.name}'s Countdown to Return:
+                    .col-md-6
+                      h1.text-white.text-right(data-countdown=driver.timeback)
+                
+                      
+      //div(data-beep=driver.should_beep)
+      //li Timeback: #{driver.timeback}
+      //li Store ID: #{driver.store_number}
+  
+  // script(src='https://code.jquery.com/jquery-3.1.1.slim.min.js', integrity='sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n', crossorigin='anonymous')
+  // script(src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js', integrity='sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb', crossorigin='anonymous')
+  // script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js', integrity='sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn', crossorigin='anonymous')
 
 
 script.
@@ -28,6 +71,7 @@ script.
   var $this = $(this);
   if($this.data){
   document.getElementById( 'timer-beep' ).play();
+  
   }
   });
   

@@ -47,12 +47,12 @@ app.get('/inbound', function(req, res) {
 });
 
 app.get('/:id([0-9]{3})', function(req, res, next){
-    
+    var id =  req.params.id;
     //Finds drivers associated with the request id aka store number
-    Driver.find({store_number:req.params.id}, function(err,docs){
+    Driver.find({store_number:req.params.id}, function(err,drivers){
         if (err) return res.send(500, { error: err });
         
-        res.render('drivertimer.pug',{data:docs});     
+        res.render('drivertimer.pug',{data:drivers, id});     
     });
      
     //Sends the app to the middleware which 
