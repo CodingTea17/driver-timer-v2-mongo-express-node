@@ -1,5 +1,6 @@
 doctype html
 html(lang="en")
+  
   head
     title Driver Timer
     link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css', integrity='sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ', crossorigin='anonymous')
@@ -7,14 +8,15 @@ html(lang="en")
     meta(http-equiv='refresh', content='10')
     script(type='text/javascript', src='https://code.jquery.com/jquery-1.7.1.min.js')
     script(src='../bower_components/jquery.countdown/dist/jquery.countdown.js')
-body(style='background: #1C1F24')
-  - var add_driver_url = '/driversetup/' + id;
-  nav.navbar.navbar-toggleable-md.navbar-light.bg-faded
-    a.navbar-brand(href='#') Pizza Guys Driver Timer | Store #{id}
-    ul.navbar-nav
-      li.nav-item.active
-        a.nav-link(href=add_driver_url)
-          | Add a Driver 
+
+  body(style='background: #1C1F24')
+    - var add_driver_url = '/driversetup/' + id;
+    nav.navbar.navbar-toggleable-md.navbar-light.bg-faded
+      a.navbar-brand(href='#') Pizza Guys Driver Timer | Store #{id}
+      ul.navbar-nav
+        li.nav-item.active
+          a.nav-link(href=add_driver_url)
+            | Add a Driver 
         // span.sr-only (current)
         // li.nav-item
         //   a.nav-link(href='#') Features
@@ -27,23 +29,22 @@ body(style='background: #1C1F24')
         //     a.dropdown-item(href='#') Action
         //     a.dropdown-item(href='#') Another action
         //     a.dropdown-item(href='#') Something else here
-
-  .container-fluid
+    .container-fluid
       //a(href=add_driver_url) Add Drivers
       ul
-      each driver in data
-        div.row(style="margin-top: 20pxp; margin-bottom: 20px")
-            div.col-md-12
-              audio#timer-beep
-                source(src='../audio/beep.mp3')
-              div(data-beep=driver.should_beep)
-              .card.card-outline-danger
-                .card-block
-                  .row
-                    .col-md-6
-                      h2.text-white.text-left #{driver.name}'s Countdown to Return:
-                    .col-md-6
-                      h1.text-white.text-right(data-countdown=driver.timeback)
+        each driver in data
+          div.row(style="margin-top: 20px; margin-bottom: 20px")
+              div.col-md-12
+                audio#timer-beep
+                  source(src='../audio/beep.mp3')
+                div(data-beep=driver.should_beep)
+                .card.card-outline-danger
+                  .card-block
+                    .row
+                      .col-md-6
+                        h2.text-white.text-left #{driver.name}'s Countdown to Return:
+                      .col-md-6
+                        h1.text-white.text-right(data-countdown=driver.timeback)
                 
                       
       //div(data-beep=driver.should_beep)
@@ -58,18 +59,30 @@ body(style='background: #1C1F24')
 script.
   $('[data-countdown]').each(function() {
   var $this = $(this), finalDate = $(this).data('countdown');
-  console.log($this);
   $this.countdown(finalDate, function(event) {
   $this.html(event.strftime('%M:%S'));
   });
   });
+  
   $('[data-beep]').each(function() {
   var $this = $(this);
   if($this.data){
   document.getElementById( 'timer-beep' ).play();
-  just_beeped = true;
+  
   }
   });
+  
+//   $.ajax({
+//   url : "/#{id}",
+//   type: "POST",
+//   dataType:'json',
+//   data : JSON.stringify({driver: {should_beep: false})
+// }),
+//   success: function(data){
+//   console.log(data.msg); // 'OK'
+//   },
+//   });
+
   
 
 

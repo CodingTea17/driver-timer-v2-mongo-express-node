@@ -8,7 +8,6 @@ var upload = multer();
 var mongoose = require('mongoose');
 var path = require("path");
 var app = express();
-var just_beeped;
 
 // connects to my mongodb "my_db" database
 mongoose.connect('mongodb://pg:pizzaguys@ds034807.mlab.com:34807/pizzaguys', {useMongoClient: true});
@@ -60,6 +59,13 @@ app.get('/:id([0-9]{3})', function(req, res, next){
     next();
 });
 
+app.post('/:id([0-9]{3})', (req,res)=>{
+    console.log(req.body);  //your variables are here.
+    
+    res.status(200).json({msg:'OK'});
+});
+
+
 /************************************************************
     Middleware which executes a script (eventually need 
     to compress into functions) after rendering the page.
@@ -70,13 +76,10 @@ app.use('/:id([0-9]{3})', function(req, res){
     
     // Gathers the time the driver will be back
     var newvalues = { should_beep: false };
-    
-    if(just_beeped == true){
-        // Finds an entry based on 'myquery'. 'upsert': means create one if not found 
-        Driver.updateMany(myquery, newvalues, {upsert:false}, function(err, doc){
-            if (err) return res.send(500, { error: err });
-        });
-    };
+    // Finds an entry based on 'myquery'. 'upsert': means create one if not found 
+    Driver.updateMany(myquery, newvalues, {upsert:false}, function(err, doc){
+        if (err) return res.send(500, { error: err });
+    });
 });
 
 
@@ -118,7 +121,6 @@ app.post('/driversetup/:id([0-9]{3})', function(req, res){
         res.render('show_message', {message: "New driver added", type: "success", driver: driverInfo});
     });
 });
-
 
 // Returns an error message to all other routes.
 // app.get('*', function(req, res){
