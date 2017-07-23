@@ -30,7 +30,6 @@ html(lang="en")
         //     a.dropdown-item(href='#') Another action
         //     a.dropdown-item(href='#') Something else here
     .container-fluid
-      //a(href=add_driver_url) Add Drivers
       ul
         each driver in data
           div.row(style="margin-top: 20px; margin-bottom: 20px")
@@ -65,24 +64,11 @@ script.
   });
   
   $('[data-beep]').each(function() {
-  var $this = $(this);
-  if($this.data){
+  var beep = $(this)
+  console.log(beep);
+  if(beep){
   document.getElementById( 'timer-beep' ).play();
-  
   }
   });
-  
-//   $.ajax({
-//   url : "/#{id}",
-//   type: "POST",
-//   dataType:'json',
-//   data : JSON.stringify({driver: {should_beep: false})
-// }),
-//   success: function(data){
-//   console.log(data.msg); // 'OK'
-//   },
-//   });
-
-  
 
 

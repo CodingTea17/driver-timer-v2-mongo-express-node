@@ -52,19 +52,22 @@ app.get('/:id([0-9]{3})', function(req, res, next){
     Driver.find({store_number:req.params.id}, function(err,drivers){
         if (err) return res.send(500, { error: err });
         
-        res.render('drivertimer.pug',{data:drivers, id});     
-    });
+        // Stringifys the json object...May not be neccessary?
+        JSON.stringify(drivers);
+        
+        // Sorts drivers by the one who's timer is expiring last
+        drivers.sort(function(x, y){
+            //console.log(x.name + " " + y.name);
+            return y.timeback - x.timeback;
+        });
+        
+        res.render('drivertimer.pug',{data:drivers, id});
+
+        });
      
     //Sends the app to the middleware which 
     next();
 });
-
-app.post('/:id([0-9]{3})', (req,res)=>{
-    console.log(req.body);  //your variables are here.
-    
-    res.status(200).json({msg:'OK'});
-});
-
 
 /************************************************************
     Middleware which executes a script (eventually need 
@@ -72,7 +75,9 @@ app.post('/:id([0-9]{3})', (req,res)=>{
 ************************************************************/
 app.use('/:id([0-9]{3})', function(req, res){
     // Selects all the drivers with the store id of the request
-    var myquery = {store_number:req.params.id};
+    var start = Date.now();
+    var end = Date.now() - 5000;
+    var myquery = {store_number:req.params.id, timeback:{ $lt : start, $gt : end }};
     
     // Gathers the time the driver will be back
     var newvalues = { should_beep: false };
