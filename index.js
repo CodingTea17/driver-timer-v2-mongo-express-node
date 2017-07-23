@@ -78,7 +78,7 @@ app.use('/:id([0-9]{3})', function(req, res){
     // var start = Date.now();
     // var end = Date.now() - 3000;
     //console.log(Date.now() - 3000);
-    var myquery = {store_number:req.params.id, timeback:{ $lte : (Date.now() - 2000)} };
+    var myquery = { $and: [{ store_number:req.params.id }, { timeback:{ $lte : (Date.now() - 2000)}} ]};
     
     // Gathers the time the driver will be back
     var newvalues = { should_beep: false };
