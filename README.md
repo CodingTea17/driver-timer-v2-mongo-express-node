@@ -1,5 +1,5 @@
 # The 2nd Version of the Driver Timer (Nessie)
-##### Check out the first version [here]("https://github.com/CodingTea17/driver-timer-v1-php").
+##### Check out the first version [here](https://github.com/CodingTea17/driver-timer-v1-php "Frankenstein").
 
 ## Concept
 
